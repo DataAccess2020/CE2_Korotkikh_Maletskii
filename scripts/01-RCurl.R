@@ -18,3 +18,4 @@ links_filtered <- stringr::str_subset(links, pattern = '^https://beppegrillo\\.i
 # for example : "https://beppegrillo.it/cookie-policy/" or "https://beppegrillo.it/grilloteca/" (which actually is a part of "categories" of the website)
 
 links_filtered_2 = as_data_frame(links_filtered)
+links_filtered_final = links_filtered_2[c(18,19,21,22,23,24,25,26,27), ]
