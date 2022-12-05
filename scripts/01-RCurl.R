@@ -16,3 +16,5 @@ links_filtered <- stringr::str_subset(links, pattern = '^https://beppegrillo\\.i
 # because the list consists of only 28 links and it is to hard to create a search pattern
 # as there are some links with just names and again should be subseted manualy even with regexps
 # for example : "https://beppegrillo.it/cookie-policy/" or "https://beppegrillo.it/grilloteca/" (which actually is a part of "categories" of the website)
+
+links_filtered_2 = as_data_frame(links_filtered)
