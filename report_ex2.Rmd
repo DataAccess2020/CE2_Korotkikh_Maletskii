@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Task 1
 
-There is no *robot.txt* (error 404), which means there are no stated rules for scraping pages from this root. However, since we should be nice and polite people, while scraping we will identify ourselves and put *sys.sleep* function for big loops.
+There is no *robot.txt* (error 404), which means there are no stated rules for scraping pages from this root. However, since we should be nice and polite people, while scraping we will identify ourselves and put *Sys.sleep* function for big loops.
 
 ## Tasks 2 and 3
 We started with loading packages that we need. Then we loaded the page, identifying who we are (putting email and info about our R version). After that with the help of *XML::getHTMLLinks* function we got HTMl links and then used regexp to filter them. After filtering we ended up with 28 links, but not all of them were redirecting to other posts of the "beppegrillo.it blog".
@@ -43,6 +43,7 @@ links_filtered_final = links_filtered_2[c(18,19,21,22,23,24,25,26,27), ]
 ```
 
 ## Task 4 
+Firstly, for each of the 47 pages from "https://beppegrillo.it/category/archivio/2016/", we got all the links and placed them into a character vector. Then, for each single linked blog post, we downloaded the page as a file, revealing our identity and putting *Sys.sleep* of 2 seconds to be polite. After that we used "SelectorGadget" to find out the path for the main text and then scraped it. When there was no text, we got " " as a result.
 
 ```{r}
 # Loading packages ----
