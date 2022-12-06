@@ -18,7 +18,7 @@ for (i in 1:47) {
     grillo_page <- RCurl::getURL(url = archive_links[[i]][j],  httpheader= (user_id))
     download.file(url = archive_links[[i]][j], destfile = here::here('pages', str_c('page_', counter, '.html')))
     counter = counter + 1
-    Sys.sleep(0.5)
+    Sys.sleep(2)
   }
 }
 
