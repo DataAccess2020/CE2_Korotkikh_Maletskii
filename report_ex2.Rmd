@@ -9,22 +9,75 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+# This is an overview of our workflow of the Class Exercise 2
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Task 1
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+There is no *robot.txt* (error 404), which means there are no stated rules for scraping pages from this root. However, since we should be nice and polite people, while scraping we will identify ourselves and put *sys.sleep* function for big loops.
 
-```{r cars}
-summary(cars)
+## Tasks 2 and 3
+We started with loading packages that we need. Then we loaded the page, identifying who we are (putting email and info about our R version). After that with the help of *XML::getHTMLLinks* function we got HTMl links and then used regexp to filter them. After filtering we ended up with 28 links, but not all of them were redirecting to other posts of the "beppegrillo.it blog".
+It was pointless to further filter with the help of regexps because the list consists of only 28 links and it is to hard to create a search pattern as there are some links with just names and they again should be subset manually even with regexps. For example : "https://beppegrillo.it/cookie-policy/" or "https://beppegrillo.it/grilloteca/" (which actually is a part of "categories" of the website). That is why we created a data frame and kept manually the links for other blog posts.
+
+```{r}
+# Loading packages 
+library(tidyverse)
+library(stringr)
+
+# Loading the page 
+rcurl_url <- 'https://beppegrillo.it/un-mare-di-plastica-ci-sommergera/'
+email <- "wiscain@yandex.ru"
+agent <- R.Version()$version.string
+user_id <- c(From = email, `User-Agent` = agent)
+rcurl_page <- RCurl::getURL(url = rcurl_url,  httpheader= (user_id))
+
+# Getting the links 
+links <- XML::getHTMLLinks(rcurl_page)
+links_filtered <- stringr::str_subset(links, pattern = '^https://beppegrillo\\.it[[:graph:]]') %>% unique()
+
+# Final filtering
+
+links_filtered_2 = as_data_frame(links_filtered)
+links_filtered_final = links_filtered_2[c(18,19,21,22,23,24,25,26,27), ]
+
 ```
 
-## Including Plots
+## Task 4 
 
-You can also embed plots, for example:
+```{r}
+# Loading packages ----
+library(httr)
+library(rvest)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Putting pages into a list ----
+archive_url <- 'https://beppegrillo.it/category/archivio/2016/'
+archive_links <- vector(mode = 'list', length = 47)
+for (i in 1:47) {
+  link <- str_c('https://beppegrillo.it/category/archivio/2016/', 'page/', i)
+  page <- read_html(link)
+  archive_links[[i]] <- html_attr(html_nodes(page, '.td_module_10 a'), 'href') %>% unique()
+}
+
+# Downloading the pages ----
+counter = 1  # it is used to save the page with its own number
+for (i in 1:47) {
+  for (j in 1:length(archive_links[[i]])) {
+    grillo_page <- RCurl::getURL(url = archive_links[[i]][j],  httpheader= (user_id))
+    download.file(url = archive_links[[i]][j], destfile = here::here('pages', str_c('page_', counter, '.html')))
+    counter = counter + 1
+    Sys.sleep(2)
+  }
+}
+
+# Extracting the main text from the pages ----
+main_texts <- vector(mode = 'list', length = 470)
+for (i in 1:470) {
+  main_texts[[i]] <- rvest::read_html(here::here('pages', str_c('page_', i, '.html'))) %>% 
+    html_elements(css = "p") %>% 
+    html_text()
+}
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Task 5 
+
