@@ -19,7 +19,7 @@ There is no *robot.txt* (error 404), which means there are no stated rules for s
 
 We started with loading packages that we need. Then we loaded the page, identifying who we are (putting email and info about our R version). After that with the help of *XML::getHTMLLinks* function we got HTML links and then used regexp to filter them. After filtering we ended up with 28 links, but not all of them were redirecting to other posts of the "beppegrillo.it blog". It was pointless to further filter with the help of regexps because the list consists of only 28 links and it is to hard to create a search pattern as there are some links with just names and they again should be subset manually even with regexps. For example : "<https://beppegrillo.it/cookie-policy/>" or "<https://beppegrillo.it/grilloteca/>" (which actually is a part of "categories" of the website). That is why we created a data frame and kept manually the links for other blog posts.
 
-```{r}
+```{r eval=FALSE, results= "hide"}
 # Loading packages 
 library(tidyverse)
 library(stringr)
@@ -46,12 +46,12 @@ links_filtered_final = links_filtered_2[c(18,19,21,22,23,24,25,26,27), ]
 
 Firstly, for each of the 47 pages from "<https://beppegrillo.it/category/archivio/2016/>", we got all the links and placed them into a character vector. Then, for each single linked blog post, we downloaded the page as a file, revealing our identity and putting *Sys.sleep* of 2 seconds to be polite. After that we used "SelectorGadget" to find out the path for the main text and then scraped it. When there was no text, we got " " as a result.
 
-```{r}
-# Loading packages ----
+```{r eval=FALSE, results= "hide"}
+# Loading packages
 library(httr)
 library(rvest)
 
-# Putting pages into a list ----
+# Putting pages into a list
 archive_url <- 'https://beppegrillo.it/category/archivio/2016/'
 archive_links <- vector(mode = 'list', length = 47)
 for (i in 1:47) {
@@ -60,7 +60,7 @@ for (i in 1:47) {
   archive_links[[i]] <- html_attr(html_nodes(page, '.td_module_10 a'), 'href') %>% unique()
 }
 
-# Downloading the pages ----
+# Downloading the pages
 counter = 1  # it is used to save the page with its own number
 for (i in 1:47) {
   for (j in 1:length(archive_links[[i]])) {
@@ -71,7 +71,7 @@ for (i in 1:47) {
   }
 }
 
-# Extracting the main text from the pages ----
+# Extracting the main text from the pages
 main_texts <- vector(mode = 'list', length = 470)
 for (i in 1:470) {
   main_texts[[i]] <- rvest::read_html(here::here('pages', str_c('page_', i, '.html'))) %>% 
@@ -82,15 +82,15 @@ for (i in 1:470) {
 ```
 
 ## Task 5
+
 To "crawl" means to automatically browse and download (1) web pages, and (2) web pages from links, contained in the (1) page, and (3) web pages from links contained in the (2) pages, and so on, with the help of special programs called "web spider" or "web crawler". There are several types of web spiders (or crawlers), for instance universal spiders scrape web pages, regardless of their content, while preferential spiders can be more precise. This method allows to collect really huge amount of data with quite simple coding.
 
 Basically, what we did manually in task 4 step by step could have been done automatically with a single command if we had used "Rcrawler".
 
-We think that for building a spider scraper we could use *Rcrawler()* function with arguments:
-*Website* (to set the root URL of the website)	
-*Useragent* (to be polite and reveal identity)
-*crawlUrlfilter* (to specify the exact site to be scraped (and not everything from the root))
-*crawlZoneCSSPat* (to scrape main texts from the pages)
-*DIR* (to specify where to save collected data)
+We think that for building a spider scraper we could use *Rcrawler()* function with arguments:\
+*Website* (to set the root URL of the website)\
+*Useragent* (to be polite and reveal identity)\
+*crawlUrlfilter* (to specify the exact site to be scraped (and not everything from the root)\
+*crawlZoneCSSPat* (to scrape main texts from the pages)\
+*DIR* (to specify where to save collected data)\
 *RequestsDelay* (to set a pause between requests to be polite)
-
