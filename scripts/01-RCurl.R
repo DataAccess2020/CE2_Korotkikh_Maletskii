@@ -1,5 +1,6 @@
 # Loading packages ----
 library(tidyverse)
+library(stringr)
 
 # Loading the page ----
 rcurl_url <- 'https://beppegrillo.it/un-mare-di-plastica-ci-sommergera/'
